@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 
-cd ~/Desktop/cc
+# create a new script folder
+mkdir -p ~/cc_scripts
 
-# generate key without passphrase
+# change directory to new script folder
+cd ~/cc_scripts
+
+# generate a new ssh key without passphrase
 ssh-keygen -t rsa -f id_rsa -C user -P ""
 
-# read key
+# read the ssh key
 key=$(<id_rsa.pub)
 
-# array of splitted key
+# array of splitted key; split on space
 array=(${key// / })
 
 # get the user
 user=${array[2]}
 
-# build new key
+# build a gcp compliant ssh key
 newKey="${user}: ${key}"
 
 # write new key to file
@@ -24,7 +28,7 @@ echo $newKey >id_rsa_gcp.pub
 gcloud compute project-info add-metadata \
     --metadata-from-file ssh-keys=id_rsa_gcp.pub
 
-# create firewall rule
+# create firewall rule, tcp port 22 for ssh connection
 gcloud compute firewall-rules create new-firewall-rule \
     --allow=tcp:22,icmp \
     --target-tags=cloud-computing
