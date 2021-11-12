@@ -27,13 +27,13 @@ echo $newKey >id_rsa_gcp.pub
 
 
 #check for existing vpcs
-listVPC=$(aws ec2 describe-vpcs --filters is-default=true --query 'VPC[*].[IsDefault]' --output text)
+listVPC=$(aws ec2 describe-vpcs --filters Name=is-default,Values=true --query 'Vpcs[*].[IsDefault]' --output text)
 #$lineCount= wc –l vpc.json
 #count the lines or check if "isDefault"=true exists
 #if [[ !$lineCount -gt 7 ]]
 
 #check if there is no default VPC
-if [[ ! $listVPC = "true" ]]
+if [[ ! $listVPC = "True" ]]
 then
 	#if there is no default VPC, create one
 	aws ec2 create-default-vpc
@@ -43,7 +43,7 @@ fi
 
 
 #upload the keyfile into kms
-aws iam upload-ssh-public-key --user-name ec2-user --ssh-public-key-body file://id_rsa.pub
+aws iam upload-ssh-public-key --user-name user --ssh-public-key-body file://id_rsa.pub
 
 #if desired, we can create our own IAM role with the following command
 #aws iam create-role --role-name EC2Assignment1 --assume-role-policy-document file://IAMPolicyAssignment1.json
@@ -55,7 +55,7 @@ aws ec2 authorize-security-group-ingress --group-name EC2deployLinuxInstance --t
 aws ec2 authorize-security-group-ingress --group-name EC2deployLinuxInstance --to-port -1 --ip-protocol icmp --cidr-ip 0.0.0.0/0 --from-port -1
 
 aws ec2 run-instances \
-  --image-id ami-id \
+  --image-id ami-00d5e377dd7fad751 \
   --key-name id_rsa \
   --count 1 \
   --instance-type t2.micro \
