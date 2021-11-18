@@ -27,6 +27,7 @@ aws ec2 import-key-pair --key-name id_rsa --public-key-material fileb://id_rsa.p
 aws ec2 create-security-group --group-name EC2deployLinuxInstance --description "For launching a Linux Server"
 
 #set ingress rules to the created security-group. Every other port to access from outside is blocked
+#first instruction allows ssh traffic, second allows icmp traffic
 aws ec2 authorize-security-group-ingress --group-name EC2deployLinuxInstance --to-port 22 --ip-protocol tcp --cidr-ip 0.0.0.0/0 --from-port 22
 aws ec2 authorize-security-group-ingress --group-name EC2deployLinuxInstance --to-port -1 --ip-protocol icmp --cidr-ip 0.0.0.0/0 --from-port 8
 
