@@ -46,3 +46,10 @@ gcloud compute disks resize test-vm \
     --size 100GB \
     --zone=europe-west3-b \
     --quiet
+
+#define a benchmarking cronjob with command
+# */30 * * * * ./bench.sh in file cronjob.txt
+#and execute it with crontab cronjob.txt
+#remove cronjob after 2 days with
+#crontab -r
+
