@@ -30,7 +30,7 @@ aws ec2 create-security-group --group-name EC2deployLinuxInstance --description 
 aws ec2 authorize-security-group-ingress --group-name EC2deployLinuxInstance --to-port 22 --ip-protocol tcp --cidr-ip 0.0.0.0/0 --from-port 22
 aws ec2 authorize-security-group-ingress --group-name EC2deployLinuxInstance --to-port -1 --ip-protocol icmp --cidr-ip 0.0.0.0/0 --from-port 8
 
-#deploy t2-micro instace
+#deploy EC2 t2-micro instance
 aws ec2 run-instances \
   --image-id ami-00d5e377dd7fad751 \
   --key-name id_rsa \
@@ -48,7 +48,8 @@ volumeID=$(aws ec2 describe-volumes --filters Name=attachment.instance-id,Values
 aws ec2 modify-volume --size 100 --volume-id $volumeID
 
 #define a benchmarking cronjob with command 
-# */30 * * * * ./bench.sh in file cronjob.txt
-#and execute it with crontab cronjob.txt
+# */30 * * * * ./bench.sh >> tmp/aws-result.csv 
+#in file cronjob.txt and execute it with 
+#crontab cronjob.txt
 #remove cronjob after 2 days with 
 #crontab -r
