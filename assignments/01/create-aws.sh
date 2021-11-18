@@ -48,7 +48,7 @@ volumeID=$(aws ec2 describe-volumes --filters Name=attachment.instance-id,Values
 aws ec2 modify-volume --size 100 --volume-id $volumeID
 
 #define a benchmarking cronjob with command 
-# */30 * * * * ./bench.sh >> tmp/aws-result.csv 
+# */30 * * * * ./bench.sh >> tmp/aws_results.csv 
 #in file cronjob.txt and execute it with 
 #crontab cronjob.txt
 #remove cronjob after 2 days with 
