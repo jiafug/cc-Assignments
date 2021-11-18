@@ -38,12 +38,9 @@ aws ec2 run-instances \
   --instance-type t2.micro \
   --security-groups EC2deployLinuxInstance > /dev/null
 
-echo "test"
-
 #filter out ID of our created e2 instance
 instanceID=$(aws ec2 describe-instances --filters Name=instance.group-name,Values=EC2deployLinuxInstance --query 'Reservations[*].Instances[*].[InstanceId]' --output text)
 
-echo $instanceID
 #filter out the attached root volume
 volumeID=$(aws ec2 describe-volumes --filters Name=attachment.instance-id,Values=$instanceID --query 'Volumes[*].[VolumeId]' --output text)
 
