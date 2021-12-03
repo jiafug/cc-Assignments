@@ -6,6 +6,8 @@
 runtime=60
 startvalue=1
 endvalue=2000
+iperf3host="ping.online.net"
+iperf3port=5200
 
 # Record the Unix timestamp before starting the benchmarks.
 time=$(date +%s)
@@ -29,11 +31,19 @@ diskSeq=$(sysbench --time=$runtime --file-test-mode=seqrd --file-total-size=1G -
 1>&2 echo "Running fileio random read test..."
 diskRand=$(sysbench --time=$runtime --file-test-mode=rndrd --file-total-size=1G --file-num=1 --file-extra-flags=direct fileio run | grep "read, MiB" | awk '/ [0-9.]*$/{print $NF}')
 
+#clean up created files to save on storage
+sysbench fileio \
+         --file-num=1 \
+         cleanup >/dev/null     #discard output
+
+
 #run the forkbench.c script
 1>&2 echo "Running forkbench script with start value $startvalue and end value $endvalue..."
 endtime=$((SECONDS+60))
 count=0
 allforks=0
+
+#execute loop for 60 seconds
 while [ $SECONDS -lt $endtime ]; do
         fork=$(./forkbench $startvalue $endvalue)
         allforks=$(awk "BEGIN{ print $allforks + $fork }")
@@ -41,7 +51,14 @@ while [ $SECONDS -lt $endtime ]; do
         :
 done
 
-forkres=$(echo "scale=2; $allforks / $count" | bc)
+forkres=$(echo "scale=2; $allforks / $count" | bc) 	#compute average
+
+#benchmark network upload speed
+1>&2 echo "Testing upload speed with iperf3 on server $iperf3host and port $iperf3port"
+iperf3 -c $iperf3host --logfile iperf.log --time $runtime -p $iperf3port -P5 -4 			#write iperf output into iperf.log
+iperfbench=$(cat iperf.log | grep sender | grep SUM | grep -o "\w*.\w* Mbits/sec" | cut -d' ' -f1) 	#extract upload throughput
+
+rm iperf.log
 
 # Output the benchmark results as one CSV line
-echo "$time,$cpu,$mem,$diskRand,$diskSeq,$forkres"
+echo "$time,$cpu,$mem,$diskRand,$diskSeq,$forkres,$iperfbench"

@@ -20,7 +20,17 @@ int parseInt(char *str, char *errMsg);
 
 //convert an int to a string with a trailing newline
 char* inttostr(int num) {
-    int charlen = (num <= 9) ? 1 : floor(log10(num)) + 1; //one character for every digit of the int
+    //cannot use floor or log10 since we cannot compile with -lm flag...
+    //int charlen = (num <= 9) ? 1 : floor(log10(num)) + 1; //one character for every digit of the int
+
+    //use static values instead
+    int charlen;
+    if (num <= 9) charlen = 1;
+    else if (num <= 99) charlen = 2;
+    else if (num <= 999) charlen = 3;
+    else if (num <= 9999) charlen = 4;
+    else charlen = 10; // i hate this so much
+
     char *str = malloc(charlen+1); //+1 for newline char
     sprintf(str, "%d\n", num);
     return str;
