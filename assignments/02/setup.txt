@@ -1,23 +1,25 @@
 1.) download ubuntu 18.04 server from https://ubuntu.com/download/server
+2.) convert iso to qcow2
+	qemu-img convert ubuntu-18.04.6-live-server-amd64.iso OS.qcow2
 A:) Qemu
-	2.) create a virtual disk of size 10G called QEMU.img
-		qemu-img create QEMU.img 10G
-	3.) install ubuntu form iso to QEMU.img
-		qemu-system-x86_64 -smp $(nproc) -m 4096 -boot d -cdrom ubuntu-18.04.6-live-server-amd64.iso -hda QEMU.img 
-	4.) after installation is completed, exit Qemu
-	5.) start Qemu with all available cores 
+	3.) create a virtual disk of size 10G called QEMU.img
+		qemu-img create -f qcow2 QEMU.img 10G
+	4.) install ubuntu form OS.qcow2 to QEMU.img
+		qemu-system-x86_64 -smp $(nproc) -m 4096 -boot d -cdrom OS.qcow2 -hda QEMU.img 
+	5.) after installation is completed, exit Qemu
+	6.) start Qemu with all available cores 
 		qemu-system-x86_64 -smp $(nproc) -m 4096 -hda QEMU.img -net nic -net user,hostfwd=tcp::2222-:22 
-	6.) access the VM via ssh
+	7.) access the VM via ssh
 		ssh user@localhost -p 2222
 B:) KVM
-	2.) create a virtual disk of size 10G called KVM.img
-		qemu-img create KVM.img 10G
-	3.) install ubuntu form iso to KVM.img
-		qemu-system-x86_64 -smp $(nproc) -m 4096 -boot d -cdrom ubuntu-18.04.6-live-server-amd64.iso -hda KVM.img 
-	4.) after installation is completed, exit Qemu
-	5.) start Qemu with all available cores 
+	3.) create a virtual disk of size 10G called KVM.img
+		qemu-img create -f qcow2 KVM.img 10G
+	4.) install ubuntu form OS.qcow2 to KVM.img
+		qemu-system-x86_64 -smp $(nproc) -m 4096 -boot d -cdrom OS.qcow2 -hda KVM.img 
+	5.) after installation is completed, exit Qemu
+	6.) start Qemu with all available cores 
     	qemu-system-x86_64 -smp $(nproc) -m 4096 -hda KVM.img -net nic -net user,hostfwd=tcp::2223-:22 -enable-kvm
-	6.) access the VM via ssh
+	7.) access the VM via ssh
 		ssh user@localhost -p 2223
 
 software:
