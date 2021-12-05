@@ -42,9 +42,6 @@ done
 
 # ==========================================
 
-## ONLY FOR TESTING
-# WARN: SHOULD BE REMOVED FOR PRODUCTION
-exit 0
 
 # ================== KVM ===================
 # TODO: Needs further implementation
