@@ -134,12 +134,10 @@ Result forkbench(int start, int end) {
 		// The recursive fork arrived at a leaf process. Return our input and 1 to count this leaf process.
 		return (Result) {start, 1};
 	}
-
 	// First, spawn child processes for the two sub-ranges. The result is a file descriptor for a buffer where the child will write its results.
 	int mid = start + (end - start) / 2;
 	int child1 = spawnChild(start, mid);
 	int child2 = spawnChild(mid + 1, end);
-
 	// Read the results from the two file descriptors.
 	Result res1 = readChild(child1);
 	Result res2 = readChild(child2);
