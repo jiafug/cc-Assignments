@@ -61,4 +61,4 @@ iperfbench=$(cat iperf.log | grep sender | grep SUM | grep -o "\w*.\w* Mbits/sec
 rm iperf.log
 
 # Output the benchmark results as one CSV line
-echo "$time,$cpu,$mem,$diskRand,$diskSeq,$forkres,$iperfbench"
+echo "$time,$cpu,$mem,$diskRand,$diskSeq,$forkres,$iperfbench" >> results.csv
