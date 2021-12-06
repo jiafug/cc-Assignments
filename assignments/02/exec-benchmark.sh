@@ -53,8 +53,8 @@ KVM_IP=10.0.10.1
 echo "time,cpu,mem,diskRand,diskSeq,fork,uplink" > kvm-results.csv
 
 # Prepare KVM for benchmark
-ssh $KVM_IP apt-get update
-ssh $KVM_IP apt-get install build-essential sysbench iperf3 bc -y
+ssh $KVM_USER@$KVM_IP apt-get update
+ssh $KVM_USER@$KVM_IP apt-get install build-essential sysbench iperf3 bc -y
 
 # Copy over forkbench.c, benchmark.sh, and kvm-results.csv
 scp ./forkbench.c $KVM_USER@$KVM_IP:/home/$KVM_USER/
@@ -72,7 +72,7 @@ for i in {1..10} ; do
 done
 
 # Get the results
-scp $KVM_IP:~/results.csv ./kvm-results.csv
+scp $KVM_USER@$KVM_IP:~/results.csv ./kvm-results.csv
 
 
 # ==========================================
@@ -89,8 +89,8 @@ QEMU_IP=10.0.10.1
 echo "time,cpu,mem,diskRand,diskSeq,fork,uplink" > qemu-results.csv
 
 # Prepare QEMU for benchmark
-ssh $QEMU_IP apt-get update
-ssh $QEMU_IP apt-get install build-essential sysbench iperf3 bc -y
+ssh $QEMU_USER@$QEMU_IP apt-get update
+ssh $QEMU_USER@$QEMU_IP apt-get install build-essential sysbench iperf3 bc -y
 
 # Copy over forkbench.c, benchmark.sh, and QEMU-results.csv
 scp ./forkbench.c $QEMU_USER@$QEMU_IP:/home/$QEMU_USER/
@@ -106,5 +106,5 @@ for i in {1..10} ; do
 done
 
 # Get the results
-scp $QEMU_IP:~/results.csv ./qemu-results.csv
+scp $QEMU_USER@$QEMU_IP:~/results.csv ./qemu-results.csv
 # ==========================================
