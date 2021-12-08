@@ -1,3 +1,5 @@
 id_rsa*
 
 .DS_Store
+
+*.zip

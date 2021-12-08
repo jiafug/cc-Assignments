@@ -6,8 +6,8 @@
 runtime=60
 startvalue=1
 endvalue=2000
-iperf3host="ping.online.net"
-iperf3port=5200
+iperf3host="127.0.0.1"
+iperf3port=5201
 
 # Record the Unix timestamp before starting the benchmarks.
 time=$(date +%s)
@@ -53,12 +53,25 @@ done
 
 forkres=$(echo "scale=2; $allforks / $count" | bc) 	#compute average
 
+ping -c1 -W1 10.0.2.2 && iperf3host=10.0.2.2 # change ip of iperf3 server if run on guest vm
+
 #benchmark network upload speed
 1>&2 echo "Testing upload speed with iperf3 on server $iperf3host and port $iperf3port"
-iperf3 -c $iperf3host --logfile iperf.log --time $runtime -p $iperf3port -P5 -4 			#write iperf output into iperf.log
-iperfbench=$(cat iperf.log | grep sender | grep SUM | grep -o "\w*.\w* Mbits/sec" | cut -d' ' -f1) 	#extract upload throughput
+iperf3 -f MBytes -c $iperf3host --logfile iperf.log --time $runtime -p $iperf3port -P5 -4 			#write iperf output into iperf.log
+iperfbench=$(cat iperf.log | grep sender | grep SUM | grep -o "\w*.\w* MBytes/sec" | cut -d' ' -f1) 	        #extract upload throughput
+if [[ -z "${iperfbench// }" ]]                                                                                       #sometimes the first string is empty
+then 
+        iperfbench=$(cat iperf.log | grep sender | grep SUM | grep -o "\w*.\w* MBytes/sec" | cut -d' ' -f2) 	#extract upload throughput
+fi
+if [[ -z "${iperfbench// }" ]]  
+then 
+        iperfbench=$(cat iperf.log | grep sender | grep SUM | grep -o "\w*.\w* Mbits/sec" | cut -d' ' -f1) 	#extract upload throughput
+fi
+
+iperfbench=$(echo $iperfbench*8 | bc)                                                                           #convert bytes to bits
 
 rm iperf.log
 
 # Output the benchmark results as one CSV line
 echo "$time,$cpu,$mem,$diskRand,$diskSeq,$forkres,$iperfbench" >> results.csv
+
