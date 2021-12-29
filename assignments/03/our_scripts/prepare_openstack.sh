@@ -1,5 +1,15 @@
 #!/bin/bash
 
+###############################################
+
+#IMPORTANT! 
+#delete ssh_keys/openstack_key and ssh_keys/openstack_key.pub, 
+#remove openstack_key from gcp controller VM from .ssh directory
+#remove created instances from OpenStack
+#remove security group and key pair from OpenStack
+
+###############################################
+
 IPADDRESS='34.78.115.252'
 
 #create security group "open_all"
@@ -21,13 +31,13 @@ openstack security group rule create --protocol icmp open_all
 ssh-keygen -t rsa -f ssh_keys/openstack_key -P "" #-C user
 
 #set key permissions to 400
-chmod 400 ssh_keys/openstack_key ssh_keys/openstack_key.pub
+chmod 400 ssh_keys/openstack_key ssh_keys/openstack_key.pub ssh_keys/id_rsa
 
 #import public key to openstack
 openstack keypair create --public-key ssh_keys/openstack_key.pub openstack_key
 
 #copy private key to gc controller or generate it there
-scp -q -i ssh_keys/id_rsa ssh_keys/openstack_keys user@$IPADDRESS:/home
+scp -i ssh_keys/id_rsa ssh_keys/openstack_key user@34.78.115.252:.ssh
 
 #----------------------------start VM instance--------------------------
 openstack server create --flavor m1.medium --image "ubuntu-16.04" \
