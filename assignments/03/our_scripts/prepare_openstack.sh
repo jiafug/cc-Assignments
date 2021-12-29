@@ -2,15 +2,14 @@
 
 ###############################################
 
-#IMPORTANT! 
+#IMPORTANT!  
+#check that the IP address to the GC controller is still correct here and in admin_bashrc!
 #delete ssh_keys/openstack_key and ssh_keys/openstack_key.pub, 
 #remove openstack_key from gcp controller VM from .ssh directory
 #remove created instances from OpenStack
 #remove security group and key pair from OpenStack
 
 ###############################################
-
-IPADDRESS='34.78.115.252'
 
 #create security group "open_all"
 openstack security group create open_all
@@ -43,10 +42,3 @@ scp -i ssh_keys/id_rsa ssh_keys/openstack_key user@34.78.115.252:.ssh
 openstack server create --flavor m1.medium --image "ubuntu-16.04" \
   --nic net-id=admin-net --security-group open_all \
   --key-name openstack_key provider-instance
-
-#----------------------------create floating IP address------------------
-#https://docs.openstack.org/ocata/user-guide/cli-manage-ip-addresses.html
-
-#openstack floating ip create public
-
-#openstack server add floating ip INSTANCE_NAME_OR_ID FLOATING_IP_ADDRESS
