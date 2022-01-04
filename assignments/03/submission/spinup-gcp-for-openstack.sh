@@ -8,7 +8,6 @@ gcloud compute networks create cc-network2 --quiet --subnet-mode=custom
 # Requirement 2: Create two VPC subnets "cc-subnet1" and "cc-subnet2" in the networks "cc-network1" and "cc-network2"
 # assign different ip ranges to them
 # cc-subnet1 needs a secondary range (--secondary range parameter)
-
 # cc-subnet 1:
 #   10.10.0.0/24
 #   10.10.1.0/24
@@ -77,8 +76,6 @@ gcloud compute instances create compute2 \
  --tags cc \
  --network-interface subnet=cc-subnet1,private-network-ip=10.10.0.4 \
  --network-interface subnet=cc-subnet2,private-network-ip=10.11.0.4
-# gcloud compute instances create compute1 --machine-type n2-standard-2 --image cc-image --tags cc --network-interface cc-subnet1,cc-subnet2
-# gcloud compute instances create compute2 --machine-type n2-standard-2 --image cc-image --tags cc --network-interface cc-subnet1,cc-subnet2
 
 # Requirement 7: Create a firewall rule that allows TCP, ICMP and IDP traffic for the ip ranges of the subnets. Restrict to CMs that have the cc tag.
 gcloud compute firewall-rules create cc-internal-subnet1 --quiet --network cc-network1 --allow tcp,icmp,udp --source-ranges 10.10.0.0/24,10.10.1.0/24,10.11.0.0/24 --target-tags cc
