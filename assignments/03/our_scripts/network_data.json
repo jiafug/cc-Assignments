@@ -1,0 +1,1 @@
+{"links": [{"id": "tapac4bdd35-69", "vif_id": "ac4bdd35-6966-46a3-b3ca-a3ebfdefa7b5", "type": "ovs", "mtu": 1450, "ethernet_mac_address": "fa:16:3e:e6:1f:0a"}], "networks": [{"id": "network0", "type": "ipv4_dhcp", "link": "tapac4bdd35-69", "network_id": "33d12ec6-f26a-4c50-83c0-f1477610b684"}], "services": [{"type": "dns", "address": "8.8.8.8"}]}
