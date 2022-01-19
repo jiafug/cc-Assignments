@@ -1,0 +1,105 @@
+- hosts: localhost
+  tasks:
+    - name: Create namespace
+      k8s:
+        name: webapp
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Create frontend deployment
+      k8s:
+        name: frontend
+        api_version: apps/v1
+        kind: Deployment
+        state: present
+        definition:
+          metadata:
+            namespace: webapp
+          spec:
+            replicas: 4
+            selector:
+              matchLabels:
+                app: frontend
+            template:
+              metadata:
+                labels:
+                  app: frontend
+              spec:
+                containers:
+                - name: frontend
+                  image: n3rdc4ptn/cc-frontend-server
+                  ports:
+                  - containerPort: 80
+                  livenessProbe:
+                    httpGet:
+                      path: /ready
+                      port: 80
+                    initialDelaySeconds: 5
+                    periodSeconds: 5
+
+    - name: Create backend deployment
+      k8s:
+        name: backend
+        api_version: apps/v1
+        kind: Deployment
+        state: present
+        definition:
+          metadata:
+            namespace: webapp
+          spec:
+            replicas: 6
+            selector:
+              matchLabels:
+                app: backend
+            template:
+              metadata:
+                labels:
+                  app: backend
+              spec:
+                containers:
+                - name: backend
+                  image: n3rdc4ptn/cc-backend-server
+                  ports:
+                  - containerPort: 80
+                  livenessProbe:
+                    httpGet:
+                      path: /ready
+                      port: 80
+                    initialDelaySeconds: 5
+                    periodSeconds: 5
+
+    - name: Create frontend service
+      k8s:
+        name: cc-frontend-service
+        api_version: v1
+        kind: Service
+        state: present
+        definition:
+          metadata:
+            namespace: webapp
+          spec:
+            type: NodePort
+            ports:
+            - port: 80
+              targetPort: 80
+              nodePort: 30080
+            selector:
+              app: frontend
+
+    - name: Create backend service
+      k8s:
+        name: cc-backend-service
+        api_version: v1
+        kind: Service
+        state: present
+        definition:
+          metadata:
+            namespace: webapp
+          spec:
+            type: ClusterIP
+            ports:
+            - port: 80
+              targetPort: 80
+            selector:
+              app: backend
