@@ -1,0 +1,9 @@
+# Docker build
+
+docker build -t <DHUB_USERNAME>/cc-frontend-server -f frontend.Dockerfile .
+docker build -t <DHUB_USERNAME>/cc-backend-server -f backend.Dockerfile .
+
+
+# Docker push
+docker push <DHUB_USERNAME>/cc-frontend-server
+docker push <DHUB_USERNAME>/cc-backend-server
