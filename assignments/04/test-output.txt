@@ -1,0 +1,39 @@
+Sending 100 requests to 34.75.145.82:30080...
+Sending 100 requests to 35.237.216.255:30080...
+Sending 100 requests to 34.74.18.42:30080...
+
+Encountered 4 frontends:
+frontend-5f77b885db-9jmqv
+frontend-5f77b885db-bmmcw
+frontend-5f77b885db-cn7s2
+frontend-5f77b885db-hp2hp
+
+Encountered 6 backends:
+backend-959669656-jhktt
+backend-959669656-w66ms
+backend-959669656-4c7ks
+backend-959669656-zklpv
+backend-959669656-797gq
+backend-959669656-48rh5
+
+Encountered 18 reply texts:
+Hello! You are 10.233.90.8 and requested /etc/nginx/html/ from 10.233.90.7 (backend-959669656-4c7ks)
+Hello! You are 10.233.90.8 and requested /etc/nginx/html/ from 10.233.90.9 (backend-959669656-zklpv)
+Hello! You are 10.233.90.8 and requested /etc/nginx/html/ from 10.233.92.7 (backend-959669656-48rh5)
+Hello! You are 10.233.90.8 and requested /etc/nginx/html/ from 10.233.92.8 (backend-959669656-797gq)
+Hello! You are 10.233.90.8 and requested /etc/nginx/html/ from 10.233.96.11 (backend-959669656-jhktt)
+Hello! You are 10.233.90.8 and requested /etc/nginx/html/ from 10.233.96.12 (backend-959669656-w66ms)
+Hello! You are 10.233.92.6 and requested /etc/nginx/html/ from 10.233.90.9 (backend-959669656-zklpv)
+Hello! You are 10.233.92.6 and requested /etc/nginx/html/ from 10.233.92.7 (backend-959669656-48rh5)
+Hello! You are 10.233.92.6 and requested /etc/nginx/html/ from 10.233.96.12 (backend-959669656-w66ms)
+Hello! You are 10.233.92.9 and requested /etc/nginx/html/ from 10.233.90.7 (backend-959669656-4c7ks)
+Hello! You are 10.233.92.9 and requested /etc/nginx/html/ from 10.233.92.8 (backend-959669656-797gq)
+Hello! You are 10.233.92.9 and requested /etc/nginx/html/ from 10.233.96.11 (backend-959669656-jhktt)
+Hello! You are 10.233.96.10 and requested /etc/nginx/html/ from 10.233.90.7 (backend-959669656-4c7ks)
+Hello! You are 10.233.96.10 and requested /etc/nginx/html/ from 10.233.90.9 (backend-959669656-zklpv)
+Hello! You are 10.233.96.10 and requested /etc/nginx/html/ from 10.233.92.7 (backend-959669656-48rh5)
+Hello! You are 10.233.96.10 and requested /etc/nginx/html/ from 10.233.92.8 (backend-959669656-797gq)
+Hello! You are 10.233.96.10 and requested /etc/nginx/html/ from 10.233.96.11 (backend-959669656-jhktt)
+Hello! You are 10.233.96.10 and requested /etc/nginx/html/ from 10.233.96.12 (backend-959669656-w66ms)
+
+All tests passed.

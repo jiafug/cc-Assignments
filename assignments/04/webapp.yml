@@ -1,5 +1,14 @@
-- hosts: localhost
+- hosts: node1
+
+  vars:
+    - ansible_python_interpreter: /usr/bin/python3
+
   tasks:
+    - name: install pip package
+      pip: 
+        name: openshift
+        state: latest
+
     - name: Create namespace
       k8s:
         name: webapp
@@ -28,7 +37,7 @@
               spec:
                 containers:
                 - name: frontend
-                  image: n3rdc4ptn/cc-frontend-server
+                  image: jiafug/cc-frontend-server
                   ports:
                   - containerPort: 80
                   livenessProbe:
@@ -59,7 +68,7 @@
               spec:
                 containers:
                 - name: backend
-                  image: n3rdc4ptn/cc-backend-server
+                  image: jiafug/cc-backend-server
                   ports:
                   - containerPort: 80
                   livenessProbe:
