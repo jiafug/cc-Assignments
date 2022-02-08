@@ -1,0 +1,16 @@
+# login into Docker Hub
+docker login
+
+# Docker build
+docker build -t <DHUB_USERNAME>/cc-frontend-server -f frontend.Dockerfile .
+docker build -t <DHUB_USERNAME>/cc-backend-server -f backend.Dockerfile .
+
+# Docker push
+docker push <DHUB_USERNAME>/cc-frontend-server
+docker push <DHUB_USERNAME>/cc-backend-server
+
+# execute playbook 
+ansible-playbook -i hosts.yml webapp.yml
+
+# get node port of frontend service from one of the VMs
+kubectl get svc -n webapp
