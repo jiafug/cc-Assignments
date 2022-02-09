@@ -35,21 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implements the "WordCount" program that computes a simple word occurrence histogram over text
- * files in a streaming fashion.
- *
- * <p>The input is a plain text file with lines separated by newline characters.
- *
- * <p>Usage: <code>WordCount --input &lt;path&gt; --output &lt;path&gt;</code><br>
- * If no parameters are provided, the program is run with default data from {@link}.
- *
- * <p>This example shows how to:
- *
- * <ul>
- *   <li>write a simple Flink Streaming program,
- *   <li>use tuple data types,
- *   <li>write and use user-defined functions.
- * </ul>
+ * Implements the "WordCount" program that computes a simple word occurrence
+ * histogram over text files in a streaming fashion.
+ * The input is a plain text file with lines separated by newline characters.
+ * Usage: <code>WordCount --input &lt;path&gt; --output &lt;path&gt;</code><br>
  */
 public class WordCount {
 
@@ -64,7 +53,6 @@ public class WordCount {
 
         // set up the execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // set the streaming mode to Batch to signalize the finite input
 
         // make parameters available in the web interface
         env.getConfig().setGlobalJobParameters(params);
@@ -84,19 +72,19 @@ public class WordCount {
         } else {
             System.out.println("No input data set provided.");
             System.out.println("Use --input to specify file input.");
-            // get default test text data
         }
 
         DataStream<Tuple2<String, Integer>> counts =
                 // split up the lines in pairs (2-tuples) containing: (word,1)
                 text.flatMap(new Tokenizer())
                         // group by the tuple field "0" and sum up tuple field "1"
-                        .keyBy(value -> value.f0).sum(1)
+                        .keyBy(value -> value.f0)
+                        .sum(1)
                         // filter words out that contain non-alphabetical characters
                         .filter(value -> value.f0.chars().allMatch(Character::isLetter))
                         // create a window over all items
                         .windowAll(EventTimeSessionWindows.withGap(Time.seconds(10)))
-                        // process all items in the window / sort them by value
+                        // process all items in the window & sort them by value
                         .process(new ProcessAllWindowFunctionWithSort());
 
         // emit result
@@ -114,8 +102,12 @@ public class WordCount {
     // USER FUNCTIONS
     // *************************************************************************
 
-
-    private static class ProcessAllWindowFunctionWithSort extends ProcessAllWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, TimeWindow> {
+    /**
+     * Implements the a user defined window function that sorts tuples in descending
+     * order ({@code Tuple2<String, Integer>}) according to their value.
+     */
+    private static class ProcessAllWindowFunctionWithSort
+            extends ProcessAllWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, TimeWindow> {
         private final Map<String, Integer> map;
 
         private ProcessAllWindowFunctionWithSort() {
@@ -123,25 +115,29 @@ public class WordCount {
         }
 
         @Override
-        public void process(ProcessAllWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, TimeWindow>.Context context, Iterable<Tuple2<String, Integer>> iterable, Collector<Tuple2<String, Integer>> collector) throws Exception {
+        public void process(
+                ProcessAllWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, TimeWindow>.Context context,
+                Iterable<Tuple2<String, Integer>> iterable, Collector<Tuple2<String, Integer>> collector)
+                throws Exception {
             // insert all items of the window into a map
             for (Tuple2<String, Integer> next : iterable) {
                 String word = next.f0;
                 Integer count = next.f1;
                 map.put(word, count);
             }
-            // sort map by value
+            // sort map by value (reversed) and add entries to Collector
             map.entrySet()
                     .stream()
                     .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .forEach(entry -> collector.collect(new Tuple2<>(entry.getKey(),entry.getValue())));
+                    .forEach(entry -> collector.collect(new Tuple2<>(entry.getKey(), entry.getValue())));
         }
     }
 
     /**
-     * Implements the string tokenizer that splits sentences into words as a user-defined
-     * FlatMapFunction. The function takes a line (String) and splits it into multiple pairs in the
-     * form of "(word,1)" ({@code Tuple2<String, Integer>}).
+     * Implements the string tokenizer that splits sentences into words as a
+     * user-defined FlatMapFunction. The function takes a line (String) and
+     * splits it into multiple pairs in the form of "(word,1)"
+     * ({@code Tuple2<String, Integer>}).
      */
     public static final class Tokenizer implements FlatMapFunction<String, Tuple2<String, Integer>> {
 
