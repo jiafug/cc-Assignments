@@ -16,8 +16,18 @@ kubectl cp tolstoy-war-and-peace.txt "${POD_NAME}":/home
 #firing up shell in hadoop
 #kubectl exec -it ${POD_NAME} -- bash
 
+# Commands to be run inside the pod
+hdfs dfs -mkdir /user
+hdfs dfs -mkdir /user/root
+hdfs dfs -mkdir input
+hdfs dfs -put tolstoy-war-and-peace.txt input
+#/user/root/tolstoy-war-and-peace.txt
+
+
+flink run examples/streaming/WordCount.jar  --input hdfs://user/root/input/tolstoy-war-and-peace.txt
+
 #------deploying flink
-#if using minikube: 
+#if using minikube:
 minikube ssh 'sudo ip link set docker0 promisc on'
 
 #creating a bunch of config files

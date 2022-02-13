@@ -1,0 +1,152 @@
+#!/bin/bash
+
+## The infrastructure is set up as following:
+# node1: master
+# node2: worker
+# node3: worker
+# node4: worker
+# node1 has an ssh key which gives it access to node2, node3 and node4
+
+
+
+# Run on every node
+sudo apt-get update
+sudo apt-get install ssh -y
+sudo apt-get install openjdk-8-jdk -y
+
+
+wget https://dlcdn.apache.org/hadoop/common/stable/hadoop-3.3.1.tar.gz
+tar -xzf hadoop-3.3.1.tar.gz
+mv hadoop-3.3.1 hadoop
+
+
+
+## Add these lines to .profile:
+
+# export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+# PATH=/home/<username>/hadoop/bin:/home/<username>/hadoop/sbin:$PATH
+# PATH=/home/<username>/flink/bin:$PATH
+# export HADOOP_HOME=/home/<username>/hadoop
+
+# export HADOOP_CLASSPATH=`/home/<username>/hadoop/bin/hadoop classpath`
+
+
+
+## Set JAVA HOME in etc/hadoop/hadoop-env.sh
+# find line and change it to:
+# export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+
+## Set NameNode Location
+# update the file hadoop/etc/hadoop/core-site.xml
+# add:
+# <property>
+#     <name>fs.default.name</name>
+#     <value>hdfs://node1:9000</value>
+# </property>
+# The default nameNode is node1
+
+## Set path for hdfs data location
+# update the file hadoop/etc/hadoop/hdfs-site.xml
+# add:
+# <property>
+#         <name>dfs.namenode.name.dir</name>
+#         <value>/home/<user-location>/data/nameNode</value>
+# </property>
+
+# <property>
+#         <name>dfs.datanode.data.dir</name>
+#         <value>/home/<user-location>/data/dataNode</value>
+# </property>
+
+# <property>
+#         <name>dfs.replication</name>
+#         <value>1</value>
+# </property>
+
+
+## Add the worker nodes to the workers file
+# update the file hadoop/etc/hadoop/workers
+# add:
+# node2
+# node3
+# node4
+
+## Copy the config files to the worker nodes
+for node in node2 node3 node4; do
+    scp -r hadoop $node:~/
+done
+
+## Format hdfs
+hdfs namenode -Format
+
+## Start the dfs cluster
+start-dfs.sh
+
+## Check with jps if the namenode is running
+jps
+## Also check on every worker node that the datanode is running
+## Now you can also access the ui with:
+# <node1-external-ip>:9870
+
+
+## Create the user directory
+hdfs dfs -mkdir -p /user/<username>
+
+## Copy the tolstoy-war-and-peace.txt to node1
+# run this on your local machine
+scp tolstoy-war-and-peace.txt <username>:<node1-external-ip>:/user/<username>/
+
+## Copy the tolstoy-war-and-peace.txt to hdfs
+hdfs dfs -put tolstoy-war-and-peace.txt ./
+
+
+###### Start yarn cluster setup ######
+# Download latest yarn binary
+wget https://dlcdn.apache.org/flink/flink-1.14.3/flink-1.14.3-bin-scala_2.11.tgz
+# Decompress the binary
+tar -xzf flink-1.14.3-bin-scala_2.11.tgz
+# Move the binary to the correct location
+mv flink-1.14.3 flink
+
+## Change the jobmanager address in the config file to node1
+# update the file flink/conf/flink-conf.yaml
+# add:
+# jobmanager.rpc.address: node1
+
+## Change the masters file to the node1
+# update the file flink/conf/masters
+# add:
+# node1
+
+## Change the workers file to the node2, node3 and node4
+# update the file flink/conf/workers
+# add:
+# node2
+# node3
+# node4
+
+
+## Copy the flink config files to the worker nodes
+for node in node2 node3 node4; do
+    scp -r flink $node:~/
+done
+
+
+## Start the flink cluster
+start-cluster.sh
+
+
+## Run the WordCount job with the hdfs input and output
+flink run WordCount.jar -input hdfs:///user/<username>/tolstoy-war-and-peace.txt -output hdfs:///user/<username>/output.csv
+
+
+## Get the output out of the hdfs
+hdfs dfs -get /user/<username>/output.csv output.csv
+
+## Copy the output from node1 to local machine
+# run this on your local machine
+scp <username>:<node1-external-ip>:/home/<username>/output.csv output.csv
+
+
+### Enjoy the output! :) ###

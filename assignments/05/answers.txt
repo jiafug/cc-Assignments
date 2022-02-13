@@ -1,0 +1,18 @@
+# Which steps in your program require communication and synchronization between your workers?
+
+After one workers reads the file from the hadoop file system, the workers need to communicate to split the file between the parallel running workers.
+
+Then every worker runs the job on its part of the dataset.
+
+Then the workers need to communicate to merge the results of the jobs.
+
+
+# What resources is the job bound by? Memory? CPU? Network? Disk? Give an
+explanation.
+
+We think the job is mainly bound by the memory of the workers. Because the dataset needs to be streamed and the results of each job step need to be cached between the different parts of the job.
+
+
+# Could you improve the partitioning of your data to yield better run-time?
+No, our best result was achieved when we used parallelism of 1.
+Thats mainly, because our input file was too small so the parallelism overhead is higher than the speed gain from parallel processing.
